@@ -130,6 +130,9 @@ defmodule Romeo.XMLNS do
   def ns_muc_user,
     do: "http://jabber.org/protocol/muc#user"
 
+  def ns_muc_room_config,
+    do: "http://jabber.org/protocol/muc#roomconfig"
+
   # Defined by XEP-0047: In-Band Bytestreams.
   def ns_ibb,
     do: "http://jabber.org/protocol/ibb"

@@ -125,6 +125,25 @@ defmodule Romeo.StanzaTest do
     ~r"<iq to='test@localhost' type='get' id='(.*)'><query xmlns='http://jabber.org/protocol/disco#items'/></iq>"
   end
 
+  test "room_config" do
+    expected_result = """
+    <iq to='lobby1@muc.localhost' type='set' id='(.*)'>
+      <query xmlns='http://jabber.org/protocol/muc#owner'>
+        <x xmlns='jabber:x:data' type='submit'>
+           <field var='FORM_TYPE'><value>http://jabber.org/protocol/muc#roomconfig</value></field>
+           <field var='muc#roomconfig_roomname'><value>Support</value></field>
+           <field var='muc#roomconfig_roomdesc'><value>This is support room</value></field>
+        </x>
+      </query>
+    </iq>
+    """ |> String.replace(~r/\n\s*/, "")
+    form = %{
+      "muc#roomconfig_roomname": "Support",
+      "muc#roomconfig_roomdesc": "This is support room"
+    }
+    assert Stanza.set_room_config("lobby1@muc.localhost", form) |> Stanza.to_xml =~ ~r"#{expected_result}"
+  end
+
   test "xhtml im" do
     xhtml_msg = "<p>Hello</p>"
     assert Stanza.xhtml_im(xhtml_msg) |> Stanza.to_xml ==

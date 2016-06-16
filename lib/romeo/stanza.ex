@@ -147,6 +147,12 @@ defmodule Romeo.Stanza do
     xmlel(iq, attrs: [{"to", to}|xmlel(iq, :attrs)])
   end
 
+  def field(key, value) do
+    xmlel(name: "field", attrs: [{"var", to_string(key)}], children: [
+      xmlel(name: "value", children: [cdata(value)])
+    ])
+  end
+
   def get_roster do
     iq("get", xmlel(name: "query", attrs: [{"xmlns", ns_roster}]))
   end
@@ -176,6 +182,23 @@ defmodule Romeo.Stanza do
 
   def disco_items(to) do
     iq(to, "get", xmlel(name: "query", attrs: [{"xmlns", ns_disco_items}]))
+  end
+
+  def set_room_config(to, config) do
+    fields = config
+              |> Map.merge(%{"FORM_TYPE" => ns_muc_room_config})
+              |> Enum.map(fn {key, val} -> field(key, val) end)
+              |> Enum.reverse
+    iq(to, "set", xmlel(
+      name: "query", 
+      attrs: [{"xmlns", ns_muc_owner}],
+      children: [
+        xmlel(
+          name: "x", 
+          attrs: [{"xmlns", ns_data_forms}, {"type", "submit"}],
+          children: fields
+        )
+    ]))
   end
 
   @doc """

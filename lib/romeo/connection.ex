@@ -45,14 +45,14 @@ defmodule Romeo.Connection do
     * `:timeout` - Connect timeout in milliseconds (default: `#{@timeout}`);
     * `:transport` - Transport handles the protocol (default: `#{@default_transport}`);
   """
-  def start_link(opts) do
+  def start_link(opts, srv_opts \\ []) do
     opts =
       opts
       |> Keyword.put_new(:timeout, @timeout)
       |> Keyword.put_new(:transport, @default_transport)
       |> Keyword.put(:owner, self)
 
-    Connection.start_link(__MODULE__, struct(__MODULE__, opts))
+    Connection.start_link(__MODULE__, struct(__MODULE__, opts), srv_opts)
   end
 
   @doc """

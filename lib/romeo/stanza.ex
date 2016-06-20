@@ -149,7 +149,7 @@ defmodule Romeo.Stanza do
 
   def field(key, value) do
     xmlel(name: "field", attrs: [{"var", to_string(key)}], children: [
-      xmlel(name: "value", children: [cdata(value)])
+      xmlel(name: "value", children: [cdata(to_string(value))])
     ])
   end
 
@@ -199,6 +199,20 @@ defmodule Romeo.Stanza do
           children: fields
         )
     ]))
+  end
+
+  def invite(room, invitees) do
+    children = invitees
+                |> Enum.map(fn invitee -> xmlel(name: "invite", attrs: [{"to", invitee}]) end)
+    xmlel(name: "message",
+      attrs: [
+        {"to", room}
+      ],
+      children: [
+        xmlel(name: "x",
+          attrs: [{"xmlns", ns_muc_user}],
+          children: children)
+      ])
   end
 
   @doc """
